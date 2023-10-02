@@ -2,6 +2,7 @@ package at.ac.tgm.hit.sew7.mwallpach.calculator;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -9,9 +10,10 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-
+import androidx.appcompat.widget.Toolbar;
 public class MainActivity extends AppCompatActivity {
     // Deklariert UI-Elemente
     private EditText feld1;
@@ -30,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Toolbar toolbar= findViewById((R.id.toolbar));
+        setSupportActionBar(toolbar);
         // Initialisiert SharedPreferences
         sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
 
@@ -57,6 +60,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+        return true;
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -78,24 +87,43 @@ public class MainActivity extends AppCompatActivity {
             int z1 = Integer.parseInt(feld1.getText().toString());
             int z2 = Integer.parseInt(feld2.getText().toString());
 
+            int result = 0;
+
             // Führt Berechnungen basierend auf ausgewähltem Radio-Button durch
             if (plus.isChecked()) {
-                setErgebnis(z1 + z2);
+                result = z1 + z2;
             } else if (minus.isChecked()) {
-                setErgebnis(z1 - z2);
+                result = z1 - z2;
             } else if (mal.isChecked()) {
-                setErgebnis(z1 * z2);
+                result = z1 * z2;
             } else if (dividiert.isChecked()) {
                 if (z2 != 0) {
-                    setErgebnis(z1 / z2);
+                    result = z1 / z2;
                 } else {
                     Toast.makeText(this, "Division durch Null ist nicht erlaubt.", Toast.LENGTH_SHORT).show();
+                    return; // Exit the method without changing the button color
                 }
+            }
+
+            // Set the result in the TextView
+            setErgebnis(result);
+
+            // Find the "Berechnen" button by ID
+            AppCompatButton calculateButton = findViewById(R.id.button1);
+
+            // Change the button color based on the result
+            if (result < 0) {
+                // If the result is negative, set the button background color to red
+                calculateButton.setBackgroundResource(R.drawable.button_square_red);
+            } else {
+                // If the result is non-negative, set the button background color to the default color
+                calculateButton.setBackgroundResource(R.drawable.button_square);
             }
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Ungültige Eingabe", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void storeValuesInSharedPreferences() {
         try {
@@ -126,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
         ergebnis.setText(String.valueOf(zahl));
     }
 
-    // Diese Methode wurde in storeValuesInSharedPreferences() umbenannt, um Konflikte zu vermeiden
     public void storeValuesInSharedPreferences(View view) {
         try {
             // Holt Werte aus den Eingabefeldern
