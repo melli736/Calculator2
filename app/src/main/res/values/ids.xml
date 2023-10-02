@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="guideline_10_percent" type="id" />
+    <item name="z1" type="id" />
+    <item name="radioButton1" type="id" />
+    <item name="radioButton2" type="id" />
+    <item name="radioButton3" type="id" />
+    <item name="radioButton4" type="id" />
+    <item name="z2" type="id" />
+    <item name="button1" type="id" />
+</resources>
