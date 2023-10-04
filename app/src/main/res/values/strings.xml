@@ -1,13 +1,15 @@
 <resources>
     <string name="app_name">Calculator</string>
     <string name="Wert1">Wert 1</string>
-    <string name="Dividiert">/</string>
-    <string name="Plus">+</string>
-    <string name="Minus">-</string>
-    <string name="Mal">*</string>
     <string name="Wert2">Wert 2</string>
     <string name="Berechnen">Berechnen</string>
     <string name="MS">MS</string>
     <string name="MR">MR</string>
     <string name="Ergebnis">Ergebnis</string>
+    <string-array name="operation_options">
+        <item>Addition</item>
+        <item>Subtraktion</item>
+        <item>Multiplikation</item>
+        <item>Division</item>
+    </string-array>
 </resources>

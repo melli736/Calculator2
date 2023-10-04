@@ -6,24 +6,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
+
 public class MainActivity extends AppCompatActivity {
     // Deklariert UI-Elemente
     private EditText feld1;
     private EditText feld2;
     private TextView ergebnis;
-    private RadioButton plus;
-    private RadioButton minus;
-    private RadioButton mal;
-    private RadioButton dividiert;
+    private Spinner operationSpinner; // Spinner für die Rechenoperationen
 
     // Deklariert SharedPreferences
     private SharedPreferences sharedPreferences;
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar= findViewById((R.id.toolbar));
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Initialisiert SharedPreferences
         sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
@@ -42,10 +41,7 @@ public class MainActivity extends AppCompatActivity {
         feld1 = findViewById(R.id.z1);
         feld2 = findViewById(R.id.z2);
         ergebnis = findViewById(R.id.textview_first);
-        plus = findViewById(R.id.radioButton1);
-        minus = findViewById(R.id.radioButton2);
-        mal = findViewById(R.id.radioButton3);
-        dividiert = findViewById(R.id.radioButton4);
+        operationSpinner = findViewById(R.id.operationSpinner); // Spinner initialisieren
 
         // Fügt einen Touch-Listener hinzu, um das Feld 'ergebnis' bei Berührung zu leeren
         ergebnis.setOnTouchListener(new View.OnTouchListener() {
@@ -56,6 +52,27 @@ public class MainActivity extends AppCompatActivity {
                     ergebnis.setText("");
                 }
                 return false;
+            }
+        });
+
+        // In Ihrer onCreate-Methode
+        // Initialisieren Sie den Spinner und füllen Sie ihn mit den Optionen aus den Ressourcen
+        Spinner operationSpinner = findViewById(R.id.operationSpinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.operation_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        operationSpinner.setAdapter(adapter);
+
+        // Fügen Sie einen Auswahl-Listener für den Spinner hinzu
+        operationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Hier können Sie Code ausführen, wenn eine Operation ausgewählt wurde
+                // Zum Beispiel: enableCalculateButton();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Hier können Sie Code ausführen, wenn keine Operation ausgewählt wurde
             }
         });
     }
@@ -90,42 +107,48 @@ public class MainActivity extends AppCompatActivity {
 
             int result = 0;
 
-            // Führt Berechnungen basierend auf ausgewähltem Radio-Button durch
-            if (plus.isChecked()) {
-                result = z1 + z2;
-            } else if (minus.isChecked()) {
-                result = z1 - z2;
-            } else if (mal.isChecked()) {
-                result = z1 * z2;
-            } else if (dividiert.isChecked()) {
-                if (z2 != 0) {
-                    result = z1 / z2;
-                } else {
-                    Toast.makeText(this, "Division durch Null ist nicht erlaubt.", Toast.LENGTH_SHORT).show();
-                    return; // Exit the method without changing the button color
-                }
+            // Ruft die ausgewählte Operation aus dem Spinner ab
+            String selectedOperation = operationSpinner.getSelectedItem().toString();
+
+            // Führt Berechnungen basierend auf der ausgewählten Operation durch
+            switch (selectedOperation) {
+                case "Addition":
+                    result = z1 + z2;
+                    break;
+                case "Subtraktion":
+                    result = z1 - z2;
+                    break;
+                case "Multiplikation":
+                    result = z1 * z2;
+                    break;
+                case "Division":
+                    if (z2 != 0) {
+                        result = z1 / z2;
+                    } else {
+                        Toast.makeText(this, "Division durch Null ist nicht erlaubt.", Toast.LENGTH_SHORT).show();
+                        return; // Methode ohne Ändern der Schaltflächenfarbe verlassen
+                    }
+                    break;
             }
 
-            // Set the result in the TextView
+            // Setzen Sie das Ergebnis im TextView
             setErgebnis(result);
 
-            // Find the "Berechnen" button by ID
+            // Finden Sie die Schaltfläche "Berechnen" nach ID
             AppCompatButton calculateButton = findViewById(R.id.button1);
 
-            // Change the button color based on the result
+            // Ändern Sie die Schaltflächenfarbe basierend auf dem Ergebnis
             if (result < 0) {
-                // If the result is negative, set the background color to red
+                // Wenn das Ergebnis negativ ist, setzen Sie die Hintergrundfarbe auf rot
                 ergebnis.setBackgroundResource(R.drawable.button_square_red);
             } else {
-                // If the result is non-negative, set the background color to the exact color #4B84F6
+                // Wenn das Ergebnis nicht negativ ist, setzen Sie die Hintergrundfarbe auf die genaue Farbe #4B84F6
                 ergebnis.setBackgroundColor(0xFF4B84F6);
             }
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Ungültige Eingabe", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     private void storeValuesInSharedPreferences() {
         try {
@@ -172,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Ungültige Eingabe", Toast.LENGTH_SHORT).show();
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -186,7 +210,6 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 
     private void resetFieldsAndSharedPreferences() {
         feld1.setText("");
@@ -207,5 +230,4 @@ public class MainActivity extends AppCompatActivity {
         String appInfo = "Author: Melissa Wallpach\nClass: 4BHIT";
         Toast.makeText(this, appInfo, Toast.LENGTH_LONG).show();
     }
-
 }
