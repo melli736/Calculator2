@@ -3,6 +3,7 @@ package at.ac.tgm.hit.sew7.mwallpach.calculator;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -113,16 +114,17 @@ public class MainActivity extends AppCompatActivity {
 
             // Change the button color based on the result
             if (result < 0) {
-                // If the result is negative, set the button background color to red
-                calculateButton.setBackgroundResource(R.drawable.button_square_red);
+                // If the result is negative, set the background color to red
+                ergebnis.setBackgroundResource(R.drawable.button_square_red);
             } else {
-                // If the result is non-negative, set the button background color to the default color
-                calculateButton.setBackgroundResource(R.drawable.button_square);
+                // If the result is non-negative, set the background color to the exact color #4B84F6
+                ergebnis.setBackgroundColor(0xFF4B84F6);
             }
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Ungültige Eingabe", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
     private void storeValuesInSharedPreferences() {
@@ -170,4 +172,40 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Ungültige Eingabe", Toast.LENGTH_SHORT).show();
         }
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_reset) {
+            resetFieldsAndSharedPreferences();
+            return true;
+        } else if (id == R.id.action_info) {
+            showAppInfo(); // Hier rufen Sie die Methode zur Anzeige der App-Info auf
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void resetFieldsAndSharedPreferences() {
+        feld1.setText("");
+        feld2.setText("");
+        ergebnis.setText("");
+
+        // Löschen Sie die SharedPreferences
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+
+        // Setzen Sie die Hintergrundfarbe des Ergebnisfeldes auf blau
+        ergebnis.setBackgroundColor(0xFF4B84F6);
+    }
+
+    // Show app information as a toast message
+    private void showAppInfo() {
+        String appInfo = "Author: Melissa Wallpach\nClass: 4BHIT";
+        Toast.makeText(this, appInfo, Toast.LENGTH_LONG).show();
+    }
+
 }
